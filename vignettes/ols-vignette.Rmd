@@ -1,0 +1,32 @@
+---
+title: "ols-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ols-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tureen625)
+```
+
+Load a dataset
+
+```{r}
+data("mtcars")
+
+X_mat <- cbind(1, mtcars$hp, mtcars$am, mtcars$wt)
+Y_vec <- as.vector(mtcars$mpg)
+
+ols.fit <- tureen625::fit_OLS(design_X = X_mat, Y = Y_vec)
+
+print(ols.fit$param_estimates)
+```

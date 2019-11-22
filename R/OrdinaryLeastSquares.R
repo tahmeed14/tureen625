@@ -10,6 +10,9 @@
 #'
 #' @export
 
+
+# Fit the OLS function
+
 fit_OLS <- function(design_X, Y, penalty = "None") {
 
     # Calculate beta estimates using OLS estimator equation
