@@ -14,19 +14,86 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Relevant Libraries
+
 ```{r setup}
 library(tureen625)
 ```
 
+
+Requirements for Submission:
+
+- Comparison(s) against the original R functions on simulated or real datasets
+- Correction (e.g. via all.equal())
+- Efficiency (e.g. bench::mark())
+
+## Table of Contents
+
+- Overview
+- Fit the Linear Regression Model
+- Analyze the Results
+- Visualize the Results
+- Correction Analysis
+- Efficiency Analysis
+- Analysis on Larger Dataset
+
 Load a dataset
 
+## Fit the Linear Regression Model
+
+For this tutorial, we will fit a multi-variable linear regression model with some continous predictor variables and one categorical predictor variable. The data we use for demonstration is the ```mtcars``` dataset which is provided by the ```datasets``` library (More documentation on this dataset can be viewed [HERE](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html)).
+
+
+The regression model we will fit is shown below:
+
+$$mpg_i = \beta_0 + \beta_1cyl + \beta_2hp + \beta_3wt + \beta_4vs$$
+where
+
+- ```mpg`` : Miles/gallon
+- ```cyl``` : Number of cylinders
+- ```hp``` : Horsepower
+- ```wt``` : Weight (1000 lbs)
+- ```vs``` : Engine (0 = V-shape, 1 = manual)
+
+
+### Setting Up Data
+
 ```{r}
+# Load up mtcars dataset
 data("mtcars")
+dim(mtcars)
+```
 
-X_mat <- cbind(1, mtcars$hp, mtcars$am, mtcars$wt)
+
+For our Ordinary Least Squares (OLS) function, we need the inputs of the outcome and independent variables to be separated and in matrix format. We demonstrate this process in the following ```R``` chunk:
+
+```{r}
+# Create design matrix
+# We need to add a vector of 1's for the intercept
+X_matrix <- cbind(1, mtcars$hp, mtcars$am, mtcars$wt, mtcars$vs)
+
 Y_vec <- as.vector(mtcars$mpg)
+```
 
-ols.fit <- tureen625::fit_OLS(design_X = X_mat, Y = Y_vec)
+*NOTE:* You may want to fit a regression model that incorporates a categorical variable that has more than 2 classes. In that case, we recommend using the ```model.matrix()``` function to easily create a design matrix. This function will convert a matrix with factor variables into a dummy encoded (reference cell encoding) matrix (see ```?model.matrix()```) for additional help.
 
-print(ols.fit$param_estimates)
+For example:
+
+```{r}
+# Make sure to use as.factor() if your variable isn't in that type format
+X_matrix2 <- stats::model.matrix(~hp + am + wt + as.factor(vs), data = mtcars)
+X_matrix2 <- as.matrix(X_matrix2)
+
+# Check if all 160 entries are equal in the two design matrices
+all.equal(sum(X_matrix ==  X_matrix2), 160)
+```
+
+### Fitting the Model
+
+We input our data variables into our function ```fit_OLS()``` to fit our OLS model
+
+```{r}
+OLS.fit <- tureen625::fit_OLS(design_X = X_matrix, Y = Y_vec)
+
+names(OLS.fit)
 ```

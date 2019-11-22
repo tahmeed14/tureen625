@@ -2,11 +2,13 @@
 #'
 #' @description This Package
 #'
-#' @param design_X
+#' @param design_X the design matrix for the regression model. Must be matrix type
 #'
-#' @return NULL
+#' @param Y the target variable for the regression model. Must be vector type
 #'
-#' @examples hello("World")
+#' @return
+#'
+#' @examples my_fit <- function(design_X = my_matrix, Y = my_Y)
 #'
 #' @export
 

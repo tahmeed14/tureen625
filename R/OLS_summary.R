@@ -11,5 +11,5 @@
 #' @export
 
 OLS_summary <- function(OLS_object) {
-    print("need to implement")
+
 }
