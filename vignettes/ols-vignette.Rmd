@@ -31,13 +31,10 @@ Requirements for Submission:
 
 - Overview
 - Fit the Linear Regression Model
-- Analyze the Results
-- Visualize the Results
+- Analyze and Visualize the Results
 - Correction Analysis
 - Efficiency Analysis
 - Analysis on Larger Dataset
-
-Load a dataset
 
 ## Fit the Linear Regression Model
 
@@ -46,7 +43,7 @@ For this tutorial, we will fit a multi-variable linear regression model with som
 
 The regression model we will fit is shown below:
 
-$$mpg_i = \beta_0 + \beta_1cyl + \beta_2hp + \beta_3wt + \beta_4vs$$
+$$mpg_i = \beta_0 + \beta_1cyl_i + \beta_2hp_i + \beta_3wt_i + \beta_4vs_i$$
 where
 
 - ```mpg``` : Miles/gallon
@@ -75,12 +72,12 @@ X_matrix <- cbind(1, mtcars$cyl, mtcars$hp, mtcars$wt, mtcars$vs)
 Y_vec <- as.vector(mtcars$mpg)
 ```
 
-*NOTE:* You may want to fit a regression model that incorporates a categorical variable that has more than 2 classes. In that case, we recommend using the ```model.matrix()``` function to easily create a design matrix. This function will convert a matrix with factor variables into a dummy encoded (reference cell encoding) matrix (see ```?model.matrix()```) for additional help.
+**NOTE:** You may want to fit a regression model that incorporates a categorical variable that has more than 2 classes. In that case, we recommend using the ```model.matrix()``` function to easily create a design matrix. This function will convert a matrix with factor variables into a dummy encoded (reference cell encoding) matrix (see ```?model.matrix()```) for additional help.
 
 For example:
 
 ```{r}
-# Make sure to use as.factor() if your variable isn't in that type format
+# Make sure to use as.factor() if your variable isn't in that type/class format
 X_matrix2 <- stats::model.matrix(~cyl + hp + wt + as.factor(vs), data = mtcars)
 X_matrix2 <- as.matrix(X_matrix2)
 
@@ -99,16 +96,51 @@ names(OLS.fit)
 ```
 
 
-## Analyze the Results
+## Analyze & Visualize the Results
 
-## Visualize the Results
+In this section, we show how we can use the returned object from our function to do some analyses of our results. First, we will observe our $\hat{\beta}$ estimates and the standard errors associated with the estimates $SE(\hat{\beta})$
+
+```{r}
+OLS.fit$param_estimates
+```
+
+```{r}
+OLS.fit$param_StdErrors
+```
+
+Note that the order of the values in this vector/matric objects corresponds to the same order in which the variables are arranged in the design matrix $X$. Thus, the first value from the two outputs above corresponds to the Intercept in the regression model and the 2nd value above corresponds to the ```cyl``` variable.
+
+Now, we show how we can view the confidence intervals in the and also visualize the results so we can make some inferences from our regression model. To visualize our results we demonstrate how to do so using the ```dotwhisker``` package.
+
+```{r}
+# View confidence intervals
+OLS.fit$conf_int
+```
+
+We can see that only the first and fourth $\hat{\beta}$ estimates have confidence interval intervals that do not include a zero. Therefore, we can the claim that the weight of a car has a significant negative effect on the outcome of interest by a magnitude of approximately -3.18
+
+```{r, warning = FALSE, message=FALSE, echo = FALSE, eval = FALSE}
+library(dotwhisker)
+
+# Visualize the confidence interval
+# We need to put our dataset in a dataframe with appropriate names
+# Note: You have to use the following names for the columns so dwplot() will plot
+format_data <- data.frame(cbind(term = c("cyl", "hp", "wt", "vs"),
+                     estimate = round(OLS.fit$param_estimates[-1], 3),
+                     conf.low = round(OLS.fit$conf_int[-1,1], 3),
+                     conf.high = round(OLS.fit$conf_int[-1,2], 3)),
+                     model = "OLS")
+
+
+dotwhisker::dwplot(x = format_data, dodge_size = 0.6) + 
+    geom_vline(xintercept = 0, color = "black") + xlim(c(-5.0, 5.0))
+```
 
 ## Correction Analysis
 
 We compare our results with the commonly used OLS function in ```R``` called ```lm()```
 
-
-### Compare $\beta$ estimates
+### Compare $\hat{\beta}$ estimates
 
 ```{r}
 lm.fit <- lm(formula = "mpg ~ cyl + hp + wt + vs", data = mtcars)
@@ -140,9 +172,17 @@ microbenchmark(
     lm(formula = "mpg ~ cyl + hp + wt + vs", data = mtcars),
     tureen625::fit_OLS(design_X = X_matrix, Y = Y_vec)
 )
-
 ```
 
 
+We see that our implemented function runs faster than the ```lm()```. This is mostly because
+
 
 ## Analysis on Larger Dataset
+
+We simulate a larger dataset and compare the speed
+
+```{r}
+# c1 <- rnorm()
+# c1 <- rbind()
+```
