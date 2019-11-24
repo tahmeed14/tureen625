@@ -49,7 +49,7 @@ The regression model we will fit is shown below:
 $$mpg_i = \beta_0 + \beta_1cyl + \beta_2hp + \beta_3wt + \beta_4vs$$
 where
 
-- ```mpg`` : Miles/gallon
+- ```mpg``` : Miles/gallon
 - ```cyl``` : Number of cylinders
 - ```hp``` : Horsepower
 - ```wt``` : Weight (1000 lbs)
@@ -70,7 +70,7 @@ For our Ordinary Least Squares (OLS) function, we need the inputs of the outcome
 ```{r}
 # Create design matrix
 # We need to add a vector of 1's for the intercept
-X_matrix <- cbind(1, mtcars$hp, mtcars$am, mtcars$wt, mtcars$vs)
+X_matrix <- cbind(1, mtcars$cyl, mtcars$hp, mtcars$wt, mtcars$vs)
 
 Y_vec <- as.vector(mtcars$mpg)
 ```
@@ -81,7 +81,7 @@ For example:
 
 ```{r}
 # Make sure to use as.factor() if your variable isn't in that type format
-X_matrix2 <- stats::model.matrix(~hp + am + wt + as.factor(vs), data = mtcars)
+X_matrix2 <- stats::model.matrix(~cyl + hp + wt + as.factor(vs), data = mtcars)
 X_matrix2 <- as.matrix(X_matrix2)
 
 # Check if all 160 entries are equal in the two design matrices
@@ -97,3 +97,52 @@ OLS.fit <- tureen625::fit_OLS(design_X = X_matrix, Y = Y_vec)
 
 names(OLS.fit)
 ```
+
+
+## Analyze the Results
+
+## Visualize the Results
+
+## Correction Analysis
+
+We compare our results with the commonly used OLS function in ```R``` called ```lm()```
+
+
+### Compare $\beta$ estimates
+
+```{r}
+lm.fit <- lm(formula = "mpg ~ cyl + hp + wt + vs", data = mtcars)
+
+all.equal(as.vector(lm.fit$coefficients), as.vector(OLS.fit$param_estimates))
+```
+
+- Our implemented ```R``` function has the same $\beta$ esimates as the ```lm()``` function
+
+### Compare $SE(\hat{\beta})$
+
+```{r}
+stdErr.lm <- summary(lm.fit)$coefficients[,"Std. Error"]
+
+all.equal(as.vector(stdErr.lm), OLS.fit$param_StdErrors)
+```
+
+- Our implemented ```R``` function has the same $SE(\hat{\beta})$ values as the ```lm()``` function
+
+## Efficiency Analysis
+
+
+```{r}
+library(microbenchmark)
+```
+
+```{r}
+microbenchmark(
+    lm(formula = "mpg ~ cyl + hp + wt + vs", data = mtcars),
+    tureen625::fit_OLS(design_X = X_matrix, Y = Y_vec)
+)
+
+```
+
+
+
+## Analysis on Larger Dataset
