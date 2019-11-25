@@ -110,8 +110,6 @@ OLS.fit$param_StdErrors
 
 Note that the order of the values in this vector/matric objects corresponds to the same order in which the variables are arranged in the design matrix $X$. Thus, the first value from the two outputs above corresponds to the Intercept in the regression model and the 2nd value above corresponds to the ```cyl``` variable.
 
-Now, we show how we can view the confidence intervals in the and also visualize the results so we can make some inferences from our regression model. To visualize our results we demonstrate how to do so using the ```dotwhisker``` package.
-
 ```{r}
 # View confidence intervals
 OLS.fit$conf_int
