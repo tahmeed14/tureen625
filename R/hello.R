@@ -1,6 +1,6 @@
-#' @title Says Hello
+#' @title Hello Function
 #'
-#' @description
+#' @description Says hello to the person whose name has been inputted
 #'
 #' @param person
 #'

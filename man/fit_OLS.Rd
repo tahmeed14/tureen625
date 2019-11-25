@@ -4,15 +4,36 @@
 \alias{fit_OLS}
 \title{Ordinary Least Squares}
 \usage{
-fit_OLS(design_X, Y, penalty = "None")
+fit_OLS(design_X, Y)
 }
 \arguments{
-\item{design_X}{}
+\item{design_X}{the design matrix for the regression model. Must be matrix type}
+
+\item{Y}{the target variable for the regression model. Must be vector type}
+}
+\value{
+Returns a list that contains several features of the linear regression model that is fit (see the provided Vignette for more details)
+
+`param_estimate`: a vector of the parameter estimates for the regression model
+
+`residuals`: a vector of the residuals for the regression model
+
+`sigma_Sq` : the variance (sigma squared) associated with the regression model
+
+`var_Mat` : the covariance-variance matrix of the beta estimates associated with the regression model
+
+`param_StdErrors` : the std. errors associated with the parameter estimates for the regression model
+
+`conf_int` : the 95 percent confidence intervals for the parameter estimates
+
+`results` : a dataframe that organizes the parameter estimates, std. erros, and confidence intervals
 }
 \description{
-This Package
+This function allows an user to fit a linear regression model using Ordinary Least Squares. For the function to work, the requirements for OLS need to be satisfied
+(i.e. design matrix has to be full rank etc.). A complete tutorial is provided as a vignette that can be accessed
+using ```vignette(package = "tureen625)````
 }
 \examples{
-hello("World")
+my_fit <- fit_OLS(design_X = matrix_object, Y = vector_object)
 
 }

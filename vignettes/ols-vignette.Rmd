@@ -31,7 +31,7 @@ Requirements for Submission:
 
 - Overview
 - Fit the Linear Regression Model
-- Analyze and Visualize the Results
+- Analyze the Results
 - Correction Analysis
 - Efficiency Analysis
 - Analysis on Larger Dataset
@@ -117,7 +117,14 @@ Now, we show how we can view the confidence intervals in the and also visualize 
 OLS.fit$conf_int
 ```
 
-We can see that only the first and fourth $\hat{\beta}$ estimates have confidence interval intervals that do not include a zero. Therefore, we can the claim that the weight of a car has a significant negative effect on the outcome of interest by a magnitude of approximately -3.18
+We can see that only the first and fourth $\hat{\beta}$ estimates have confidence interval intervals that do not include a zero. Therefore, we can make the claim that the weight (```wt```) of a car has a significant negative effect on the outcome of interest (```mpg```) by a magnitude of approximately -3.18 miles per gallon.
+
+You can also view all of these results by simplying running the following code
+
+```{r}
+round(OLS.fit$results, 3)
+```
+
 
 ```{r, warning = FALSE, message=FALSE, echo = FALSE, eval = FALSE}
 library(dotwhisker)
@@ -138,13 +145,16 @@ dotwhisker::dwplot(x = format_data, dodge_size = 0.6) +
 
 ## Correction Analysis
 
-We compare our results with the commonly used OLS function in ```R``` called ```lm()```
+We compare our results with the commonly used function in ```R``` for fitting linear regression models called ```lm()```. First, we compare the parameter estimates then the standard errors. Finally, we compare if we can draw the same inferences from both functions.
 
 ### Compare $\hat{\beta}$ estimates
 
 ```{r}
+# Fit the model using lm()
 lm.fit <- lm(formula = "mpg ~ cyl + hp + wt + vs", data = mtcars)
+```
 
+```{r}
 all.equal(as.vector(lm.fit$coefficients), as.vector(OLS.fit$param_estimates))
 ```
 
@@ -160,8 +170,17 @@ all.equal(as.vector(stdErr.lm), OLS.fit$param_StdErrors)
 
 - Our implemented ```R``` function has the same $SE(\hat{\beta})$ values as the ```lm()``` function
 
+### Compare residuals
+
+```{r}
+all.equal(as.vector(OLS.fit$residuals), as.vector(lm.fit$residuals))
+```
+
+- Our implemented ```R``` function has the same residual values as the ```lm()``` function
+
 ## Efficiency Analysis
 
+Now, we compare the speed of the two functions by using the ```microbenchmark``` package.
 
 ```{r}
 library(microbenchmark)
@@ -174,15 +193,66 @@ microbenchmark(
 )
 ```
 
+- We see that our implemented function runs faster than the ```lm()```, on average. We believe this is because our function provides estimates for the $\hat{\beta}$, the standard errors, residuals, and the confidence intervals. See below for a couple more features. 
 
-We see that our implemented function runs faster than the ```lm()```. This is mostly because
+```{r}
+names(OLS.fit)
+```
 
+
+The ```lm()``` function provides a lot of other features such as the t-test statistic, p-values, $R^2$ value, Adjusted $R^2$. So, there must be a lot of other computations that are ongoing. 
 
 ## Analysis on Larger Dataset
 
-We simulate a larger dataset and compare the speed
+We simulate a larger dataset and compare the speed to see if we get different results
 
 ```{r}
-# c1 <- rnorm()
-# c1 <- rbind()
+set.seed(12)
+
+sim.B <- rnorm(n = 5, mean = 0, sd = 10) # simulated betas
+
+c1 <- rnorm(10000, mean = 15, sd = 2) # continuous var
+c2 <- rnorm(10000, mean = 2, sd = 3) # continuous var
+c3 <- rbinom(10000, size = c(0,1), prob = 0.75) # binary indicator
+c4 <- rpois(n = 10000, lambda = 2) # count var
+
+sim.X <- cbind(1, c1, c2, c3, c4)
+
+sim.Y <- as.vector(sim.X %*% sim.B + rnorm(10000, 0,3)) # simulate Y's
+
+summary(sim.Y)
+
+sim.data <- data.frame(cbind(Y = sim.Y, sim.X[,-1])) # save a dataframe version for lm()
+colnames(sim.data)
 ```
+
+### Correctness
+
+```{r}
+lm.fit <- lm(formula = "Y ~ c1 + c2 + c3 + c4", data = sim.data)
+OLS.fit <- tureen625::fit_OLS(design_X = sim.X, Y = sim.Y)
+
+stdErr.lm <- summary(lm.fit)$coefficients[,"Std. Error"]
+
+all.equal(as.vector(lm.fit$coefficients), as.vector(OLS.fit$param_estimates))
+all.equal(as.vector(stdErr.lm), as.vector(OLS.fit$param_StdErrors))
+all.equal(as.vector(OLS.fit$residuals), as.vector(lm.fit$residuals))
+```
+
+- Results are the same when it comes to parameter estimation, std. error calculation, and residuals
+
+###Efficiency
+
+```{r}
+microbenchmark(
+    lm(formula = "Y ~ c1 + c2 + c3 + c4", data = sim.data),
+    tureen625::fit_OLS(design_X = sim.X, Y = sim.Y)
+)
+```
+
+
+- With a dataset that has 10000 observations, we note that both of the functions are very similar in terms of computational speed. Our function is a bit faster, but the difference is ignorable
+
+- If you want to try out larger datasets, simply simulate data using the above code as a skeleton and just increase the size from 10000 to something larger
+
+- You can also use other datasets from the ```datasets``` library to make comparisons if you really want to
