@@ -26,6 +26,8 @@ To view the tutorial (vignette) associated with this package, run the following 
 
 ```browseVignettes(package = "tureen625")```
 
+If for any reason, you cannot access the vignette or the vignette is not downloading, we provide a PDF version of the tutorial in the github repository called ```tutorial.pdf```.
+
 ## Contact Information
 
 If you have any questions, please contact the maintainer at ```tureen@umich.edu```
