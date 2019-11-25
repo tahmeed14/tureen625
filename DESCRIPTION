@@ -4,9 +4,8 @@ Title: Ordinary Least Squares
 Version: 0.1.0
 Author: Tahmeed Tureen
 Maintainer: Tahmeed Tureen <tureen@umich.edu>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: This package provides on function that lets users fit linear regression models using the Ordinary Least Squares method
+License: Not associated with any licensing
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.0
