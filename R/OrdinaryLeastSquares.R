@@ -24,8 +24,12 @@
 #'
 #' `results` : a dataframe that organizes the parameter estimates, std. erros, and confidence intervals
 #'
-#' @examples matrix_object = cbind(1,rnorm(3,0,1)); vector_object = rnorm(3,0,1)
+#' @examples matrix_object = cbind(1,rnorm(3,0,1)) # 3 x 2 matrix
+#' vector_object = rnorm(3,0,1) # 3 x 1 vector
+#'
 #' my_fit <- fit_OLS(design_X = matrix_object, Y = vector_object)
+#'
+#' my_fit2 <- fit_OLS(matrix_object, vector_object)
 #'
 #' @export
 

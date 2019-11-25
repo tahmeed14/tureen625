@@ -34,7 +34,11 @@ This function allows an user to fit a linear regression model using Ordinary Lea
 using ```vignette(package = "tureen625)````
 }
 \examples{
-matrix_object = cbind(1,rnorm(3,0,1)); vector_object = rnorm(3,0,1)
+matrix_object = cbind(1,rnorm(3,0,1)) # 3 x 2 matrix
+vector_object = rnorm(3,0,1) # 3 x 1 vector
+
 my_fit <- fit_OLS(design_X = matrix_object, Y = vector_object)
+
+my_fit2 <- fit_OLS(matrix_object, vector_object)
 
 }
