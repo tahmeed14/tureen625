@@ -185,7 +185,7 @@ library(microbenchmark)
 ```
 
 ```{r}
-microbenchmark(
+microbenchmark::microbenchmark(
     lm(formula = "mpg ~ cyl + hp + wt + vs", data = mtcars),
     tureen625::fit_OLS(design_X = X_matrix, Y = Y_vec)
 )
@@ -242,7 +242,7 @@ all.equal(as.vector(OLS.fit$residuals), as.vector(lm.fit$residuals))
 ###Efficiency
 
 ```{r}
-microbenchmark(
+microbenchmark::microbenchmark(
     lm(formula = "Y ~ c1 + c2 + c3 + c4", data = sim.data),
     tureen625::fit_OLS(design_X = sim.X, Y = sim.Y)
 )
